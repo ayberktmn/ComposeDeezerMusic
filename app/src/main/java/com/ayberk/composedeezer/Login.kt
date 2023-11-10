@@ -126,12 +126,12 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 40.dp)
+                    .padding(start = 50.dp)
             ) {
                 Text(
                     text = "Şifremi unuttum",
                     modifier = Modifier
-                        .background(Color.White)
+                        .align(Alignment.Center)
                         .clickable {
                             navHostController.navigate("register")
                         }
@@ -140,7 +140,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                     modifier = Modifier
                         .background(Color.Gray)
                         .height(1.dp)
-                        .width(103.dp)
+                        .width(65.dp)
                         .align(Alignment.BottomStart) // Çizgiyi yazının altına hizalar
                 )
             }
@@ -169,7 +169,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
 
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.4f)
                 .padding(bottom = 16.dp)
         ) {
             Text("Giriş Yap")
@@ -217,27 +217,12 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             },
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.4f)
                 .padding(bottom = 16.dp)
         ) {
             Text("Kayıt Ol")
         }
 
-        if (!isEmailValid && isShowingEmailError) {
-            Text(
-                text = "Lütfen geçerli bir e-posta adresi giriniz.",
-                color = Color.Red,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        } else if (!isPasswordValid && isShowingPasswordError) {
-            Text(
-                text = "Şifre uzunluğu 5 karakterden fazla olmalıdır.",
-                color = Color.Red,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
         Button(
             onClick = {
                 val savedPassword = getSavedPassword(context = context)
@@ -256,6 +241,23 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
         ) {
             Text("Kayıtlı hesabım")
         }
+
+        if (!isEmailValid && isShowingEmailError) {
+            Text(
+                text = "Lütfen geçerli bir e-posta adresi giriniz.",
+                color = Color.Red,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        } else if (!isPasswordValid && isShowingPasswordError) {
+            Text(
+                text = "Şifre uzunluğu 5 karakterden fazla olmalıdır.",
+                color = Color.Red,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
     }
 }
 
@@ -301,5 +303,4 @@ fun clearPassword(context: Context) {
     val editor = sharedPreferences.edit()
     editor.remove(PASSWORD_KEY)
     editor.apply()
-
 }

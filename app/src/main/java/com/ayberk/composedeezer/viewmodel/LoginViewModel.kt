@@ -1,5 +1,7 @@
 package com.ayberk.composedeezer.viewmodel
 
+
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.model.User
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
 
@@ -23,7 +26,6 @@ class LoginViewModel @Inject constructor(
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
-
     private val _register = MutableStateFlow<Resource<User>>(Resource.Unspecified())
     val register: Flow<Resource<User>> = _register
 
@@ -55,7 +57,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun createEmailandPassword(user: User, password: String){
-
         auth.createUserWithEmailAndPassword(user.email,password)
             .addOnSuccessListener { authResult ->
                 val user = authResult.user
@@ -65,9 +66,25 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
-            .addOnFailureListener {
-                _register.value = Resource.Error(it.message.toString())
-            }
+        .addOnFailureListener {
+            _register.value = Resource.Error(it.message.toString())
+        }
     }
 
+    fun changePassword(newPassword: String, confirmPassword: String, onResult: (Boolean, String) -> Unit) {
+        if (newPassword == confirmPassword) {
+            val user = auth.currentUser
+            user?.updatePassword(newPassword)
+                ?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        onResult(true, "Şifre değişikliği başarılı")
+                    } else {
+                        onResult(false, "Şifre değişikliği başarısız")
+                    }
+                }
+        } else {
+            onResult(false, "Şifreler uyuşmuyor")
+        }
+    }
 }
+
