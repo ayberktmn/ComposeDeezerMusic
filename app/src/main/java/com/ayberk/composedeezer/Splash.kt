@@ -19,7 +19,7 @@ fun Splash(navHostController: NavHostController) {
         // 3 saniye bekle
         delay(3000)
         // Anasayfaya geçiş yap
-        navHostController.navigate("anasayfa")
+        navHostController.navigate("login")
     }
     Box(
         modifier = Modifier.fillMaxSize(),
