@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317142223976",
+    "project_id": "composedeezer",
+    "storage_bucket": "composedeezer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317142223976:android:a972e17bc642e69de53fdd",
+        "android_client_info": {
+          "package_name": "com.ayberk.composedeezer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARILX8KpULRjN_MXDuw76PlOEPqrconG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
