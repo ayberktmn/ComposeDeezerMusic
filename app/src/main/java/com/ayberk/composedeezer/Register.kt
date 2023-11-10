@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ayberk.composedeezer.viewmodel.LoginViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun Register(navHostController: NavHostController) {
@@ -47,10 +50,13 @@ fun Register(navHostController: NavHostController) {
 fun ChangePasswordScreen(navHostController: NavHostController) {
 
     val LoginViewModel: LoginViewModel= hiltViewModel()
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordagain by remember { mutableStateOf("") }
     var isPasswordValid by remember { mutableStateOf(true) }
     var isShowingPasswordError by remember { mutableStateOf(false) }
+    var showMessage by remember { mutableStateOf(false) }
+    var showPasswordErrorText by remember { mutableStateOf(false) }
 
 
     Column (
@@ -67,6 +73,19 @@ fun ChangePasswordScreen(navHostController: NavHostController) {
             modifier = Modifier.size(100.dp)
         )
         Spacer(modifier = Modifier.height(30.dp))
+
+        OutlinedTextField(value = email,
+            onValueChange = {
+                email = it
+            }, label = { Text(text = stringResource(id = R.string.email)) },
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .padding(bottom = 8.dp),
+            leadingIcon = { // İşte burada sol tarafına simge (ikon) ekliyoruz
+                Icon(imageVector = Icons.Default.Email, contentDescription = null)
+            }
+        )
+
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -113,6 +132,7 @@ fun ChangePasswordScreen(navHostController: NavHostController) {
                 if (isPasswordValid && password == passwordagain) {
 
                     LoginViewModel.changePassword(
+                        email,
                         password,
                         passwordagain
                     ) { success, message ->
@@ -139,7 +159,7 @@ fun ChangePasswordScreen(navHostController: NavHostController) {
                     isShowingPasswordError = true
                 }
             },
-            enabled = passwordagain.isNotBlank() && password.isNotBlank(),
+            enabled = email.isNotBlank() && passwordagain.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .padding(bottom = 16.dp)
@@ -150,21 +170,42 @@ fun ChangePasswordScreen(navHostController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
         if (!isPasswordValid || isShowingPasswordError) {
             if (!isPasswordValid) {
-                Text(
-                    text = "Şifre uzunluğu 5 karakterden fazla olmalıdır.",
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                LaunchedEffect(key1 = Unit) {
+                    // 3 saniye bekle
+                    showPasswordErrorText = true
+                    delay(3000)
+                    // 3 saniye sonra hata mesajını göster
+                    showPasswordErrorText = false
+                }
+                // Hata mesajını göstermek için bir Text ekleyin
+                if (showPasswordErrorText) {
+                    Text(
+                        text = "Şifre uzunluğu 5 karakterden fazla olmalıdır.",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
 
             } else if (isShowingPasswordError) {
                 Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = "Şifreler uyuşmuyor.",
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                LaunchedEffect(Unit) {
+                    // 3 saniye boyunca mesajı göster
+                    showMessage = true
+                    delay(3000)
+                    // 3 saniye sonra mesajı gizle
+                    showMessage = false
+                }
+
+                // Mesajı göstermek için bir Text ekleyin
+                if (showMessage) {
+                    Text(
+                        text = "Şifreler uyuşmuyor.",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
             }
         }
     }

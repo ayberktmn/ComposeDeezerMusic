@@ -2,6 +2,10 @@ package com.ayberk.composedeezer.viewmodel
 
 
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.model.User
@@ -70,20 +74,29 @@ class LoginViewModel @Inject constructor(
             _register.value = Resource.Error(it.message.toString())
         }
     }
-
-    fun changePassword(newPassword: String, confirmPassword: String, onResult: (Boolean, String) -> Unit) {
+    fun changePassword(email: String, newPassword: String, confirmPassword: String, onResult: (Boolean, String) -> Unit) {
+        // E-posta formatını kontrol et
         if (newPassword == confirmPassword) {
-            val user = auth.currentUser
-            user?.updatePassword(newPassword)
-                ?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        onResult(true, "Şifre değişikliği başarılı")
+            // Firebase Authentication üzerinde oturum aç
+            auth.signInWithEmailAndPassword(email, newPassword)
+                .addOnCompleteListener { signInTask ->
+                    if (signInTask.isSuccessful) {
+                        // Oturum açma başarılı ise, şifre değiştir
+                        val user = auth.currentUser
+                        user?.updatePassword(newPassword)
+                            ?.addOnCompleteListener { updatePasswordTask ->
+                                if (updatePasswordTask.isSuccessful) {
+                                    onResult(true, "Şifre değişikliği başarılı")
+                                } else {
+                                    onResult(false, "Şifre değişikliği başarısız")
+                                }
+                            }
                     } else {
-                        onResult(false, "Şifre değişikliği başarısız")
+                        onResult(false, "Oturum açma başarısız")
                     }
                 }
         } else {
-            onResult(false, "Şifreler uyuşmuyor")
+            onResult(false, "E-posta formatı geçersiz veya şifreler uyuşmuyor")
         }
     }
 }

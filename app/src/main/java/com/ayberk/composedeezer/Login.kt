@@ -123,7 +123,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 text = "Beni Hatırla"
             )
 
-            Box(
+         /*   Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 50.dp)
@@ -143,7 +143,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                         .width(65.dp)
                         .align(Alignment.BottomStart) // Çizgiyi yazının altına hizalar
                 )
-            }
+            } */
         }
         Spacer(modifier = Modifier.height(16.dp))
 
