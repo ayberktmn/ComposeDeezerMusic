@@ -1,17 +1,13 @@
 package com.ayberk.composedeezer.viewmodel
 
-
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.model.User
+import com.ayberk.composedeezer.util.Constans.USER_COLLECTION
 import com.ayberk.composedeezer.util.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,34 +16,34 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
 
-    private val auth : FirebaseAuth
+    private val auth : FirebaseAuth,
+    private val db : FirebaseFirestore
 
-) : ViewModel(){
+
+) : ViewModel() {
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
     private val _register = MutableStateFlow<Resource<User>>(Resource.Unspecified())
     val register: Flow<Resource<User>> = _register
 
-    fun login(email:String,password:String){
+    fun login(email: String, password: String) {
 
         viewModelScope.launch {
             _login.emit(Resource.Loading())
         }
 
-        auth.signInWithEmailAndPassword(email,password)
+        auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
                 val user = authResult.user
-                if (user != null){
+                if (user != null) {
                     viewModelScope.launch {
                         _login.emit(Resource.Success(user))
                     }
-                }
-                else{
+                } else {
                     viewModelScope.launch {
                         _login.emit(Resource.Error("Giriş başarısız,kullanıcı bulunamadı..."))
                     }
@@ -60,21 +56,23 @@ class LoginViewModel @Inject constructor(
             }
     }
 
-    fun createEmailandPassword(user: User, password: String){
-        auth.createUserWithEmailAndPassword(user.email,password)
-            .addOnSuccessListener { authResult ->
-                val user = authResult.user
-                if (user != null) {
-                    viewModelScope.launch {
-                        _login.emit(Resource.Success(user))
-                    }
+    fun createEmailandPassword(user: User, password: String) {
+        auth.createUserWithEmailAndPassword(user.email, password)
+            .addOnSuccessListener {
+                it.user?.let {
+                    saveUserInfo(it.uid,user)
                 }
             }
-        .addOnFailureListener {
-            _register.value = Resource.Error(it.message.toString())
-        }
+            .addOnFailureListener { e ->
+                _register.value = Resource.Error(e.message.toString())
+            }
     }
-    fun changePassword(email: String, newPassword: String, confirmPassword: String, onResult: (Boolean, String) -> Unit) {
+    fun changePassword(
+        email: String,
+        newPassword: String,
+        confirmPassword: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
         // E-posta formatını kontrol et
         if (newPassword == confirmPassword) {
             // Firebase Authentication üzerinde oturum aç
@@ -98,6 +96,18 @@ class LoginViewModel @Inject constructor(
         } else {
             onResult(false, "E-posta formatı geçersiz veya şifreler uyuşmuyor")
         }
+    }
+    fun saveUserInfo(userUid: String, user: User) {
+        db.collection(USER_COLLECTION)
+            .document(userUid)
+            .set(user)
+            .addOnSuccessListener {
+                _register.value = Resource.Success(user)
+
+            }
+            .addOnFailureListener {
+                _register.value = Resource.Error(it.message.toString())
+            }
     }
 }
 

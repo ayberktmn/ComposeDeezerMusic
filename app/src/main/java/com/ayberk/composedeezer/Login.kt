@@ -61,6 +61,9 @@ import com.ayberk.composedeezer.viewmodel.LoginViewModel
 @Composable
 fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel = hiltViewModel()){
 
+    var allowBackNavigation by remember { mutableStateOf(true) }
+    BackHandler(enabled = allowBackNavigation){}
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
@@ -74,7 +77,6 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
-            saveImageUriToSharedPreferences(context, it)
             isClickable = false
         }
     }
@@ -86,9 +88,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        LaunchedEffect(context) {
-            selectedImageUri = loadImageUriFromSharedPreferences(context)
-        }
+
         Image(
             painter = if (selectedImageUri != null) {
                 rememberImagePainter(data = selectedImageUri)
@@ -242,6 +242,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                     isShowingPasswordError = true
                 }
                 val user = User(email)
+
                 val password = password
                 viewLoginModel.createEmailandPassword(user, password)
             },
@@ -257,6 +258,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             onClick = {
                 val savedPassword = getSavedPassword(context = context)
                 val savedEmail = getSavedEmail(context = context)
+
                 if (!savedPassword.isNullOrBlank() && !savedEmail.isNullOrBlank()) {
                     email = savedEmail
                     password = savedPassword
@@ -316,10 +318,10 @@ fun getSavedPassword(context: Context): String? {
     return sharedPreferences.getString(PASSWORD_KEY, null)
 }
 
-fun saveEmail(context: Context, password: String) {
+fun saveEmail(context: Context, email: String) {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("MyAppPreferences1", Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
-    editor.putString(Email_KEY, password)
+    editor.putString(Email_KEY, email)
     editor.apply()
 }
 
@@ -333,20 +335,4 @@ fun clearPassword(context: Context) {
     val editor = sharedPreferences.edit()
     editor.remove(PASSWORD_KEY)
     editor.apply()
-}
-
-private fun saveImageUriToSharedPreferences(context: Context, uri: Uri) {
-    val sharedPreferences =
-        context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-    editor.putString("image_uri", uri.toString())
-    editor.apply()
-}
-
-// Function to load the saved image URI from SharedPreferences
-private fun loadImageUriFromSharedPreferences(context: Context): Uri? {
-    val sharedPreferences =
-        context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-    val uriString = sharedPreferences.getString("image_uri", null)
-    return uriString?.let { Uri.parse(it) }
 }
