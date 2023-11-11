@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -80,12 +83,12 @@ fun GenreItemGrid(navHostController: NavHostController,category: List<Data>){
 
 @Composable
 fun CategoryItem(navHostController: NavHostController, category: Data) {
-  //  val painter = rememberImagePainter(data = category.picture, builder = {
-  //  })
+
     Card(
         modifier = Modifier
             .padding(8.dp),
         shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = Color.Black)
 
     ) {
         Box {
@@ -100,30 +103,34 @@ fun CategoryItem(navHostController: NavHostController, category: Data) {
                         modifier = Modifier.padding(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        Image(
+                            painter = rememberImagePainter(data = category.picture),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.FillBounds
+                        )
+
                         Text(
                             text = category.name,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black,
+                            color = Color.White,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(bottom = 8.dp)
-                                .padding(start = 8.dp)
+                                .padding(start = 3.dp)
                         )
-                        /*  Image(
-                                      painter = painter,
-                                      contentDescription = null,
-                                      modifier = Modifier.fillMaxSize(),
-                                      contentScale = ContentScale.FillBounds
-                                  ) */
+
                         Image(
                             painter = painterResource(id = R.drawable.music),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(50.dp)
+                                .size(40.dp)
                                 .align(Alignment.Top)
-                                .padding(8.dp)
                         )
                     }
                 }
