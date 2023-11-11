@@ -2,9 +2,13 @@ package com.ayberk.composedeezer
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.util.Patterns
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -36,6 +41,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.ayberk.composedeezer.model.User
 import com.ayberk.composedeezer.util.Resource
 import com.ayberk.composedeezer.viewmodel.LoginViewModel
@@ -60,7 +68,16 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
     var isShowingEmailError by remember { mutableStateOf(false) }
     var isShowingPasswordError by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
-
+    var isClickable by remember { mutableStateOf(true) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current as ComponentActivity
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            saveImageUriToSharedPreferences(context, it)
+            isClickable = false
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -69,12 +86,25 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        LaunchedEffect(context) {
+            selectedImageUri = loadImageUriFromSharedPreferences(context)
+        }
         Image(
-            painter = painterResource(id = R.drawable.user),
+            painter = if (selectedImageUri != null) {
+                rememberImagePainter(data = selectedImageUri)
+            } else {
+                painterResource(id = R.drawable.user)
+            },
             contentDescription = "Kullanıcı Resim",
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .clickable {
+                    if (isClickable) {
+                        launcher.launch("image/*")
+                    }
+                }
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(text = email)
@@ -303,4 +333,20 @@ fun clearPassword(context: Context) {
     val editor = sharedPreferences.edit()
     editor.remove(PASSWORD_KEY)
     editor.apply()
+}
+
+private fun saveImageUriToSharedPreferences(context: Context, uri: Uri) {
+    val sharedPreferences =
+        context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("image_uri", uri.toString())
+    editor.apply()
+}
+
+// Function to load the saved image URI from SharedPreferences
+private fun loadImageUriFromSharedPreferences(context: Context): Uri? {
+    val sharedPreferences =
+        context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+    val uriString = sharedPreferences.getString("image_uri", null)
+    return uriString?.let { Uri.parse(it) }
 }
