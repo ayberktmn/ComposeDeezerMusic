@@ -2,6 +2,7 @@ package com.ayberk.composedeezer
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -100,8 +101,12 @@ fun CategoryItem(navHostController: NavHostController, category: Data) {
                     modifier = Modifier.padding(5.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(5.dp),
+                        modifier = Modifier.padding(5.dp)
+                            .clickable {
+                                       // music sayfasına git
+                            },
                         verticalAlignment = Alignment.CenterVertically
+
                     ) {
 
                         Image(

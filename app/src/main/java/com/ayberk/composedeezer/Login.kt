@@ -118,7 +118,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .padding(bottom = 8.dp),
-            leadingIcon = { // İşte burada sol tarafına simge (ikon) ekliyoruz
+            leadingIcon = { //  burada sol tarafına simge (ikon) ekliyoruz
                 Icon(imageVector = Icons.Default.Email, contentDescription = null)
             }
         )
@@ -131,7 +131,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .padding(bottom = 8.dp),
-            leadingIcon = { // İşte burada sol tarafına simge (ikon) ekliyoruz
+            leadingIcon = { //  burada sol tarafına simge (ikon) ekliyoruz
                 Icon(imageVector = Icons.Default.Lock, contentDescription = null)
             }
         )
@@ -193,7 +193,6 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 } else {
                     isShowingEmailError = true
                     isShowingPasswordError = true
-
                 }
             },
 
@@ -205,7 +204,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             Text("Giriş Yap")
         }
 
-        // Daha sonra LoginViewModel'den gelen değeri dinleyerek işlemi kontrol edebilirsiniz.
+        // LoginViewModel'den gelen değeri dinleyerek işlemi kontrol edebilirsiniz.
         LaunchedEffect(Unit) {
             viewLoginModel.login.collect() { resource ->
                 when (resource) {
@@ -216,13 +215,15 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
 
                     is Resource.Success -> {
                         // Giriş başarılı olduğunda yapılacak işlemler burada
+                        Toast.makeText(context,"Giriş yapılıyor",Toast.LENGTH_SHORT).show()
                         navHostController.navigate("anasayfa")
+
                     }
 
                     is Resource.Error -> {
                         // Hata durumunu burada kontrol et
                         // resource.message ile hata mesajına erişebilirsiniz: resource.message
-
+                        Toast.makeText(context,"Lütfen bilgilerinizi kontrol edin",Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }
