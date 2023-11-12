@@ -1,19 +1,23 @@
 package com.ayberk.composedeezer.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.model.User
 import com.ayberk.composedeezer.util.Constans.USER_COLLECTION
 import com.ayberk.composedeezer.util.Resource
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,17 +60,18 @@ class LoginViewModel @Inject constructor(
             }
     }
 
-    fun createEmailandPassword(user: User, password: String) {
-        auth.createUserWithEmailAndPassword(user.email, password)
+    fun createEmailandPassword(user: User) {
+        auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnSuccessListener {
-                it.user?.let {
-                    saveUserInfo(it.uid,user)
+                it.user?.let { firebaseUser ->
+                    saveUserInfo(firebaseUser.uid, user)
                 }
             }
             .addOnFailureListener { e ->
                 _register.value = Resource.Error(e.message.toString())
             }
     }
+
     fun changePassword(
         email: String,
         newPassword: String,
@@ -97,17 +102,36 @@ class LoginViewModel @Inject constructor(
             onResult(false, "E-posta formatı geçersiz veya şifreler uyuşmuyor")
         }
     }
+
     fun saveUserInfo(userUid: String, user: User) {
         db.collection(USER_COLLECTION)
             .document(userUid)
             .set(user)
             .addOnSuccessListener {
                 _register.value = Resource.Success(user)
-
             }
             .addOnFailureListener {
                 _register.value = Resource.Error(it.message.toString())
             }
     }
-}
 
+    suspend fun getAllUsers(): List<User> {
+        return try {
+            val querySnapshot = db.collection(USER_COLLECTION).get().await()
+
+            // QuerySnapshot'tan User listesini oluştur
+            val usersList = mutableListOf<User>()
+            for (document in querySnapshot.documents) {
+                val user = document.toObject(User::class.java)
+                user?.let {
+                    usersList.add(it)
+                }
+            }
+
+            usersList
+        } catch (e: Exception) {
+            // Hata durumunu ele al
+            emptyList()
+        }
+    }
+}
