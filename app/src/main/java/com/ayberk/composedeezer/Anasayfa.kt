@@ -54,22 +54,36 @@ fun Anasayfa(navHostController : NavHostController,genreviewModel: GenreViewMode
 
 
 @Composable
-fun GenreList(navHostController: NavHostController,viewModel: GenreViewModel = hiltViewModel()){
+fun GenreList(navHostController: NavHostController, viewModel: GenreViewModel = hiltViewModel()) {
 
     val genreList by remember { viewModel.genreList }
     val errorMessage by remember { viewModel.errorMessage }
     val isLoading by remember { viewModel.isLoading }
 
-    GenreItemGrid(navHostController = navHostController, category = genreList)
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+    // Arka plan rengini değiştirmek için Surface ekleniyor
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+
     ) {
-        if (isLoading) {
-            CircularProgressIndicator(color = Color.Blue)
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "Background Image",
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        GenreItemGrid(navHostController = navHostController, category = genreList)
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.Blue)
+            }
         }
     }
-
 }
 
 

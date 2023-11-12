@@ -12,8 +12,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -76,42 +79,54 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
     var isShowingPasswordError by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
     var isClickable by remember { mutableStateOf(true) }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+   // var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current as ComponentActivity
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            selectedImageUri = it
-            isClickable = false
-        }
-    }
+  //  val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+    //    uri?.let {
+      //      selectedImageUri = it
+        //    isClickable = false
+        //}
+    //}
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "Background Image",
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         Image(
-            painter = if (selectedImageUri != null) {
-                rememberImagePainter(data = selectedImageUri)
-            } else {
-                painterResource(id = R.drawable.user)
-            },
-            contentDescription = "Kullanıcı Resim",
+            painter = painterResource(id = R.drawable.deezer),
+            contentDescription = "Logo",
             modifier = Modifier
                 .size(100.dp)
-                .clip(CircleShape)
+                .background(Color.White)
                 .clickable {
-                    if (isClickable) {
-                        launcher.launch("image/*")
-                    }
                 }
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = email)
+        Text(
+            text = email,
+            modifier = Modifier
+                .background(Color.White) // Arka plan rengini burada belirleyebilirsiniz
+                .padding(20.dp),
+         fontSize = 18.sp
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -121,6 +136,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             }, label = { Text(text = stringResource(id = R.string.email)) },
             modifier = Modifier
                 .fillMaxWidth(0.7f)
+                .background(Color.White)
                 .padding(bottom = 8.dp),
             leadingIcon = { //  burada sol tarafına simge (ikon) ekliyoruz
                 Icon(imageVector = Icons.Default.Email, contentDescription = null)
@@ -134,6 +150,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth(0.7f)
+                .background(Color.White)
                 .padding(bottom = 8.dp),
             leadingIcon = { //  burada sol tarafına simge (ikon) ekliyoruz
                 Icon(imageVector = Icons.Default.Lock, contentDescription = null)
@@ -157,7 +174,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 text = "Beni Hatırla"
             )
 
-         /*   Box(
+            /*   Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 50.dp)
@@ -179,7 +196,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 )
             } */
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         val context = LocalContext.current
 
@@ -192,7 +209,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                     viewLoginModel.login(email, password)
                     if (rememberMe) {
                         savePassword(context = context, password)
-                        saveEmail(context = context,email)
+                        saveEmail(context = context, email)
                     }
                 } else {
                     isShowingEmailError = true
@@ -202,7 +219,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 24.dp)
         ) {
             Text("Giriş Yap")
         }
@@ -218,7 +235,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
 
                     is Resource.Success -> {
                         // Giriş başarılı olduğunda yapılacak işlemler burada
-                        Toast.makeText(context,"Giriş yapılıyor",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Giriş yapılıyor", Toast.LENGTH_SHORT).show()
                         navHostController.navigate("anasayfa")
 
                     }
@@ -226,8 +243,13 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                     is Resource.Error -> {
                         // Hata durumunu burada kontrol et
                         // resource.message ile hata mesajına erişebilirsiniz: resource.message
-                        Toast.makeText(context,"Lütfen bilgilerinizi kontrol edin",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Lütfen bilgilerinizi kontrol edin",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                     else -> {}
                 }
             }
@@ -244,14 +266,14 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                     isShowingEmailError = true
                     isShowingPasswordError = true
                 }
-                val user = User(email,password,selectedImageUri?.path.toString())
+                val user = User(email, password)
                 viewLoginModel.createEmailandPassword(user)
 
             },
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 24.dp)
         ) {
             Text("Kayıt Ol")
         }
@@ -264,13 +286,13 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 if (!savedPassword.isNullOrBlank() && !savedEmail.isNullOrBlank()) {
                     email = savedEmail
                     password = savedPassword
-                } else{
-                    Toast.makeText(context,"Kayıtlı Hesap Bulunamadı",Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Kayıtlı Hesap Bulunamadı", Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 24.dp)
 
         ) {
             Text("Kayıtlı hesabım")
@@ -291,7 +313,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
+    }
     }
 
 }
