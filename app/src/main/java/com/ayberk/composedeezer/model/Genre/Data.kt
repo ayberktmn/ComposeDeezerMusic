@@ -1,4 +1,4 @@
-package com.ayberk.composedeezer.model
+package com.ayberk.composedeezer.model.Genre
 
 data class Data(
     val id: Int,

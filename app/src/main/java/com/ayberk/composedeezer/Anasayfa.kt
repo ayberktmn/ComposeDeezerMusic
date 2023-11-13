@@ -16,21 +16,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,10 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.ayberk.composedeezer.model.Data
-import com.ayberk.composedeezer.util.Resource
+import com.ayberk.composedeezer.model.Genre.Data
 import com.ayberk.composedeezer.viewmodel.GenreViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 
 @Composable
@@ -63,7 +58,6 @@ fun GenreList(navHostController: NavHostController, viewModel: GenreViewModel = 
     // Arka plan rengini değiştirmek için Surface ekleniyor
     Surface(
         modifier = Modifier.fillMaxSize(),
-
     ) {
         Image(
             painter = painterResource(id = R.drawable.background),
@@ -101,10 +95,13 @@ fun CategoryItem(navHostController: NavHostController, category: Data) {
 
     Card(
         modifier = Modifier
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                // Kategoriye tıklandığında ara bir sayfaya yönlendir
+                navHostController.navigate("artist/${category.id}")
+            },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.Black)
-
     ) {
         Box {
             Column(
@@ -115,14 +112,15 @@ fun CategoryItem(navHostController: NavHostController, category: Data) {
                     modifier = Modifier.padding(5.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(5.dp)
+                        modifier = Modifier
+                            .padding(5.dp)
                             .clickable {
-                                       // music sayfasına git
+                                // Kategoriye tıklandığında ara bir sayfaya yönlendir
+                                navHostController.navigate("artist/${category.id}")
                             },
                         verticalAlignment = Alignment.CenterVertically
 
                     ) {
-
                         Image(
                             painter = rememberImagePainter(data = category.picture),
                             contentDescription = null,

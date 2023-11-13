@@ -3,7 +3,8 @@ package com.ayberk.composedeezer.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ayberk.composedeezer.model.Data
+import com.ayberk.composedeezer.model.Genre.Data
+import com.ayberk.composedeezer.model.artist.Artist
 import com.ayberk.composedeezer.retrofit.RetrofitRepository
 import com.ayberk.composedeezer.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ class GenreViewModel @Inject constructor(
 ) : ViewModel() {
 
     var genreList = mutableStateOf<List<Data>>(listOf())
+    var artisList = mutableStateOf<List<com.ayberk.composedeezer.model.artist.Data>>(listOf())
     var errorMessage = mutableStateOf("")
     var isLoading = mutableStateOf(false)
 
@@ -50,5 +52,8 @@ class GenreViewModel @Inject constructor(
                 else -> {}
             }
         }
+    }
+    suspend fun LoadArtist(genre_id:Int): Resource<Artist> {
+        return repository.getArtist(genre_id)
     }
 }
