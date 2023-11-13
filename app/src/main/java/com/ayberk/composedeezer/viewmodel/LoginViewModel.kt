@@ -1,16 +1,13 @@
 package com.ayberk.composedeezer.viewmodel
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ayberk.composedeezer.model.User
+import com.ayberk.composedeezer.model.Genre.User
 import com.ayberk.composedeezer.util.Constans.USER_COLLECTION
 import com.ayberk.composedeezer.util.Resource
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
