@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.ayberk.composedeezer.model.artist.Artist
+import com.ayberk.composedeezer.model.artist.Data
 import com.ayberk.composedeezer.util.Resource
 import com.ayberk.composedeezer.viewmodel.GenreViewModel
 
@@ -51,7 +52,7 @@ fun Artist(navHostController:NavHostController,genre_id:Int,viewModel:GenreViewM
 
 
 @Composable
-fun ArtistList(navHostController: NavHostController,artist: List<com.ayberk.composedeezer.model.artist.Data>){
+fun ArtistList(navHostController: NavHostController, artist: List<Data>){
     ArtistItemGrid(navHostController = navHostController,artist )
 }
 
@@ -74,7 +75,7 @@ fun ArtistItem(navHostController: NavHostController, artist: com.ayberk.composed
             .size(300.dp, 150.dp)
             .padding(8.dp)
             .clickable {
-                //  navHostController.navigate("artist/${artist.id}")
+                navHostController.navigate("artistdetail/${artist.id}")
             },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.Black)
@@ -86,7 +87,7 @@ fun ArtistItem(navHostController: NavHostController, artist: com.ayberk.composed
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        navHostController.navigate("artistdetail")
+                        navHostController.navigate("artistdetail/${artist.id}")
                     }
                     .height(75.dp) // Yüksekliği yarıya indiriliyor
                     .graphicsLayer(

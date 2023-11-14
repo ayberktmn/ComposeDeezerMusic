@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.model.Genre.Data
 import com.ayberk.composedeezer.model.artist.Artist
+import com.ayberk.composedeezer.model.artistdetail.ArtistDetail
 import com.ayberk.composedeezer.retrofit.RetrofitRepository
 import com.ayberk.composedeezer.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,5 +56,9 @@ class GenreViewModel @Inject constructor(
     }
     suspend fun LoadArtist(genre_id:Int): Resource<Artist> {
         return repository.getArtist(genre_id)
+    }
+
+    suspend fun LoadArtistDetail(artist_id:Int): Resource<ArtistDetail> {
+        return repository.getArtistDetail(artist_id)
     }
 }

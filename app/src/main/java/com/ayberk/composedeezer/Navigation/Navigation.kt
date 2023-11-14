@@ -47,8 +47,18 @@ fun Navigation() {
                 navHostController = navHostController
             )
         }
-        composable("artistdetail") {
-            ArtistDetail(navHostController)
+        composable("artistdetail/{artist_id}",
+            arguments = listOf(
+                navArgument("artist_id"){
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            val artistId = remember {
+                it.arguments?.getInt("artist_id") ?: 0
+            }
+            ArtistDetail( artist_id = artistId,
+                navHostController = navHostController)
         }
     }
 }

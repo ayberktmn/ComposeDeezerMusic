@@ -2,6 +2,7 @@ package com.ayberk.composedeezer.retrofit
 
 import com.ayberk.composedeezer.model.Genre.Genre
 import com.ayberk.composedeezer.model.artist.Artist
+import com.ayberk.composedeezer.model.artistdetail.ArtistDetail
 import com.ayberk.composedeezer.util.Resource
 import javax.inject.Inject
 
@@ -22,6 +23,15 @@ class RetrofitRepository@Inject constructor(
             api.getArtist(genre_Id)
         } catch (e:Exception){
             return Resource.Error("Artist Error")
+        }
+        return Resource.Success(response)
+    }
+
+    suspend fun getArtistDetail(artist_id:Int) : Resource<ArtistDetail>{
+        val response = try {
+            api.getArtistDetail(artist_id)
+        } catch (e:Exception){
+            return Resource.Error("ArtistDetail Error")
         }
         return Resource.Success(response)
     }
