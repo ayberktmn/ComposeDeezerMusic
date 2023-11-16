@@ -3,6 +3,7 @@ package com.ayberk.composedeezer.retrofit
 import com.ayberk.composedeezer.model.Genre.Genre
 import com.ayberk.composedeezer.model.artist.Artist
 import com.ayberk.composedeezer.model.artistdetail.ArtistDetail
+import com.ayberk.composedeezer.models.album.Album
 import com.ayberk.composedeezer.util.Resource
 import javax.inject.Inject
 
@@ -36,4 +37,12 @@ class RetrofitRepository@Inject constructor(
         return Resource.Success(response)
     }
 
+    suspend fun getAlbum(artist_id:Int) : Resource<Album>{
+        val response = try {
+            api.getAlbum(artist_id)
+        } catch (e:Exception){
+            return Resource.Error("Album Error")
+        }
+        return Resource.Success(response)
+    }
 }

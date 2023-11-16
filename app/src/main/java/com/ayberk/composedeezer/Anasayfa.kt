@@ -55,7 +55,7 @@ fun GenreList(navHostController: NavHostController, viewModel: GenreViewModel = 
     val errorMessage by remember { viewModel.errorMessage }
     val isLoading by remember { viewModel.isLoading }
 
-    // Arka plan rengini değiştirmek için Surface ekleniyor
+    // Arka plan rengini değiştirmek için
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -72,7 +72,6 @@ fun GenreList(navHostController: NavHostController, viewModel: GenreViewModel = 
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-
             if (isLoading) {
                 CircularProgressIndicator(color = Color.Blue)
             }
