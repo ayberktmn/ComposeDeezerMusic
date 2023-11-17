@@ -77,10 +77,6 @@ fun ArtistDetailItemGrid(navHostController: NavHostController, artistdetail: Lis
         items(artistdetail) { artistdetail ->
             if (artistdetail != null) {
                 ArtistDetailItem(navHostController = navHostController, artistdetail = artistdetail)
-            }else{
-                RetryView(error = "Tekrar deneyiniz") {
-
-                }
             }
         }
     }

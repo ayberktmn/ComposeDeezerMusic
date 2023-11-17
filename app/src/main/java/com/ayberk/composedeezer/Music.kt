@@ -75,14 +75,6 @@ fun MusicItemGrid(navHostController: NavHostController,music: List<com.ayberk.co
 @Composable
 fun MusicItem(navHostController: NavHostController,viewModel: GenreViewModel = hiltViewModel(), music: com.ayberk.composedeezer.model.album.Data) {
 
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    var imageResourceId by remember { mutableStateOf(R.drawable.play) }
-
-    LaunchedEffect(isPlaying) {
-        // Observe changes in isPlaying and update imageResourceId accordingly
-        imageResourceId = if (isPlaying) R.drawable.pause else R.drawable.play
-    }
-
     Card(
         modifier = Modifier
             .size(200.dp, 150.dp)

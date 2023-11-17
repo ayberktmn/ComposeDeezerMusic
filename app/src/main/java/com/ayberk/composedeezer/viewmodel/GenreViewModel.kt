@@ -2,8 +2,6 @@ package com.ayberk.composedeezer.viewmodel
 
 import android.media.MediaPlayer
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayberk.composedeezer.R
@@ -28,14 +26,12 @@ class GenreViewModel @Inject constructor(
     var genreList = mutableStateOf<List<Data>>(listOf())
     var errorMessage = mutableStateOf("")
     var isLoading = mutableStateOf(false)
+
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> get() = _isPlaying
-
-    private val _imageResourceId = MutableStateFlow(R.drawable.play)
-    var imageResourceId: StateFlow<Int> get() = _imageResourceId
-        set(value) {}
-
     private var mediaPlayer: MediaPlayer? = null
+    private var playbackPosition: Int = 0
+
 
     init {
         loadGenre()
@@ -44,8 +40,10 @@ class GenreViewModel @Inject constructor(
     fun togglePlayPause(url: String) {
         if (_isPlaying.value) {
             stopPlayback()
+
         } else {
             startPlayback(url)
+
         }
     }
 
@@ -53,19 +51,24 @@ class GenreViewModel @Inject constructor(
         mediaPlayer = MediaPlayer()
         mediaPlayer?.setDataSource(url)
         mediaPlayer?.prepare()
+
+
+        mediaPlayer?.seekTo(playbackPosition)
+
+        mediaPlayer?.setOnCompletionListener {
+            playbackPosition = 0
+            startPlayback(url)
+        }
+
         mediaPlayer?.start()
         _isPlaying.value = true
-        _imageResourceId.value = R.drawable.pause
     }
 
     private fun stopPlayback() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer?.pause()
+        playbackPosition = mediaPlayer?.currentPosition ?: 0
         _isPlaying.value = false
-        _imageResourceId.value = R.drawable.play
     }
-
     override fun onCleared() {
         super.onCleared()
         stopPlayback()
