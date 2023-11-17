@@ -1,5 +1,6 @@
 package com.ayberk.composedeezer
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,6 +77,10 @@ fun ArtistDetailItemGrid(navHostController: NavHostController, artistdetail: Lis
         items(artistdetail) { artistdetail ->
             if (artistdetail != null) {
                 ArtistDetailItem(navHostController = navHostController, artistdetail = artistdetail)
+            }else{
+                RetryView(error = "Tekrar deneyiniz") {
+
+                }
             }
         }
     }
@@ -150,6 +156,9 @@ fun AlbumItem(navHostController: NavHostController, album: Data) {
         modifier = Modifier
             .fillMaxWidth()
             .height(85.dp)
+            .clickable {
+                navHostController.navigate("music/${album.album.id}")
+            }
             .padding(8.dp),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.Black)
@@ -159,7 +168,8 @@ fun AlbumItem(navHostController: NavHostController, album: Data) {
                 .fillMaxWidth()
                 .background(color = Color.Black)
                 .clickable {
-                    // navHostController.navigate("country/${country.UlkeID}")
+                    navHostController.navigate("music/${album.album.id}")
+                    println("music/${album.album.id}")
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {

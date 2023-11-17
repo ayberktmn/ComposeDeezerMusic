@@ -45,4 +45,13 @@ class RetrofitRepository@Inject constructor(
         }
         return Resource.Success(response)
     }
+
+    suspend fun getMusic(album_id:Int) : Resource<Album>{
+        val response = try {
+            api.getMusic(album_id)
+        } catch (e:Exception){
+            return Resource.Error("Music Error")
+        }
+        return Resource.Success(response)
+    }
 }

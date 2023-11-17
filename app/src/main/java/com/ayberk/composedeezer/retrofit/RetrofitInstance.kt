@@ -20,4 +20,7 @@ interface RetrofitInstance {
     @GET("artist/{artist_id}/top?limit=50")
     suspend fun getAlbum(@Path("artist_id") artist_id: Int) : Album
 
+    @GET("album/{album_id}/tracks")
+    suspend fun getMusic(@Path("album_id") album_di: Int) : Album
+
 }

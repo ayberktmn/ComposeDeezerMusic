@@ -11,6 +11,7 @@ import com.ayberk.composedeezer.Anasayfa
 import com.ayberk.composedeezer.Artist
 import com.ayberk.composedeezer.ArtistDetail
 import com.ayberk.composedeezer.Login
+import com.ayberk.composedeezer.Music
 import com.ayberk.composedeezer.Register
 import com.ayberk.composedeezer.Splash
 
@@ -60,5 +61,19 @@ fun Navigation() {
             ArtistDetail( artist_id = artistId,
                 navHostController = navHostController)
         }
+        composable("music/{album_id}",
+            arguments = listOf(
+                navArgument("album_id"){
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            val albumid = remember {
+                it.arguments?.getInt("album_id") ?: 0
+            }
+            Music( album_id = albumid,
+                navHostController = navHostController)
+        }
+
     }
 }
