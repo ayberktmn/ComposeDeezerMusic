@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -208,8 +211,10 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .padding(bottom = 24.dp)
+                .clip(CircleShape),
+            colors = ButtonDefaults.buttonColors(Color.Black)
         ) {
-            Text("Giriş Yap")
+            Text("Giriş Yap", color = Color.White)
         }
 
         // LoginViewModel'den gelen değeri dinleyerek işlemi kontrol edebilirsiniz.
@@ -262,8 +267,10 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .padding(bottom = 24.dp)
+                .clip(CircleShape),
+            colors = ButtonDefaults.buttonColors(Color.Green)
         ) {
-            Text("Kayıt Ol")
+            Text("Kayıt Ol",color = Color.White)
         }
 
         Button(
@@ -280,7 +287,8 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .padding(bottom = 24.dp)
+                .padding(bottom = 24.dp),
+            colors = ButtonDefaults.buttonColors(Color.Blue)
 
         ) {
             Text("Kayıtlı hesabım")
