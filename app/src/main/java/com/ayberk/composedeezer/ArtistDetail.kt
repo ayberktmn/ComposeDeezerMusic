@@ -223,20 +223,3 @@ fun AlbumItemGrid(navHostController: NavHostController, albumList: List<Data?>) 
 
 
 
-@Composable
-fun RetryView(
-    error: String,
-    onRetry: () -> Unit
-) {
-    Column {
-        Text(error, color = Color.Red, fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(
-            onClick = { onRetry() },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "Retry")
-        }
-    }
-}
-

@@ -6,13 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
@@ -66,19 +71,28 @@ fun GenreList(navHostController: NavHostController, viewModel: GenreViewModel = 
                 .fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        GenreItemGrid(navHostController = navHostController, category = genreList)
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (isLoading) {
+        // Veriler başarıyla yüklendiğinde veya hata olmadığında içeriği göster
+        if (errorMessage.isEmpty() && !isLoading) {
+            GenreItemGrid(navHostController = navHostController, category = genreList)
+        } else {
+            // RetryView'ı göster
+            RetryView(error = "Bağlantınızı Kontrol Edin") {
+                // "Retry" düğmesine tıklandığında yapılacak işlemler
+                viewModel.loadGenre() // Verileri tekrar yükle
+            }
+        }
+        // Loading durumunda progress bar göster
+        if (isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 CircularProgressIndicator(color = Color.Blue)
             }
         }
     }
 }
-
 
 @Composable
 fun GenreItemGrid(navHostController: NavHostController,category: List<Data>){
@@ -151,6 +165,31 @@ fun CategoryItem(navHostController: NavHostController, category: Data) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun RetryView(
+    error: String,
+    onRetry: () -> Unit
+) {
+    Column {
+        Text(
+            text = error,
+            color = Color.Red,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            onClick = { onRetry() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Retry")
         }
     }
 }

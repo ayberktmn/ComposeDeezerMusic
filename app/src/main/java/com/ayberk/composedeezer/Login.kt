@@ -49,10 +49,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ayberk.composedeezer.model.Genre.User
 import com.ayberk.composedeezer.util.Resource
 import com.ayberk.composedeezer.viewmodel.LoginViewModel
+import kotlinx.coroutines.flow.collect
 
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -254,21 +256,19 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
                 isPasswordValid = isValidPassword(password)
 
                 if (isEmailValid && isPasswordValid) {
-                    navHostController.navigate("anasayfa")
+                    val user = User(email, password)
+                    viewLoginModel.createEmailandPassword(navHostController,user)
                 } else {
                     isShowingEmailError = true
                     isShowingPasswordError = true
                 }
-                val user = User(email, password)
-                viewLoginModel.createEmailandPassword(user)
-
             },
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .padding(bottom = 24.dp)
                 .clip(CircleShape),
-            colors = ButtonDefaults.buttonColors(Color.Green)
+            colors = ButtonDefaults.buttonColors(Color.Black)
         ) {
             Text("Kayıt Ol",color = Color.White)
         }
@@ -310,7 +310,7 @@ fun Login(navHostController: NavHostController, viewLoginModel: LoginViewModel =
             )
         }
     }
-    }
+  }
 
 }
 
@@ -357,3 +357,4 @@ fun clearPassword(context: Context) {
     editor.remove(PASSWORD_KEY)
     editor.apply()
 }
+

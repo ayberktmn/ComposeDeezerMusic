@@ -6,8 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.annotation.RawRes
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateIntSizeAsState
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +32,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
@@ -49,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,6 +77,7 @@ import com.ayberk.composedeezer.util.Resource
 import com.ayberk.composedeezer.viewmodel.GenreViewModel
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.bumptech.glide.load.resource.gif.GifDrawable
+import kotlinx.coroutines.delay
 
 @Composable
 fun Music(navHostController: NavHostController, album_id:Int, viewModel: GenreViewModel = hiltViewModel()) {
@@ -178,7 +185,7 @@ fun MusicItemDialogContent(navHostController: NavHostController, viewModel: Genr
         modifier = Modifier
             .size(1000.dp, 500.dp)
             .background(MaterialTheme.colorScheme.background)
-    ) {
+    ){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -229,12 +236,14 @@ fun MusicItemDialogContent(navHostController: NavHostController, viewModel: Genr
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
+
                 ) {
 
                     Image(
                         painter = painterResource(id = R.drawable.play),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
                             .clickable {
                                 viewModel.togglePlayPause(music.preview)
                             }
@@ -243,9 +252,10 @@ fun MusicItemDialogContent(navHostController: NavHostController, viewModel: Genr
                     Image(
                         painter = painterResource(id = R.drawable.like),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
                             .clickable {
-                              //  viewModel.togglePlayPause(music.preview)
+                                //  viewModel.togglePlayPause(music.preview)
                             }
                     )
 
@@ -253,14 +263,41 @@ fun MusicItemDialogContent(navHostController: NavHostController, viewModel: Genr
                     Image(
                         painter = painterResource(id = R.drawable.send),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
                             .clickable {
-                                    shareOnWhatsApp(context, music.link)
+                                shareContent(context, music.link)
                             }
+
                     )
                 }
+
+                Text(
+                    text = music.artist.name,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
             }
         }
+    }
+}
+
+
+fun shareOnInstagram(context: Context, text: String) {
+    val sendIntent = Intent("android.intent.action.SEND")
+    sendIntent.putExtra(Intent.EXTRA_TEXT, text)
+    sendIntent.type = "text/plain"
+    sendIntent.`package` = "com.instagram.android" // Instagram'ı hedef uygulama olarak belirtiyoruz
+
+    try {
+        context.startActivity(sendIntent)
+    } catch (ex: ActivityNotFoundException) {
+        // Instagram yüklü değilse veya desteklenmiyorsa hata işlemleri buraya eklenir.
+        Toast.makeText(context, "Instagram yüklü değil veya desteklenmiyor.", Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -268,14 +305,32 @@ fun shareOnWhatsApp(context: Context, text: String) {
     val sendIntent = Intent("android.intent.action.SEND")
     sendIntent.putExtra(Intent.EXTRA_TEXT, text)
     sendIntent.type = "text/plain"
-    sendIntent.`package` = "com.instagram" // WhatsApp'ı hedef uygulama olarak belirtiyoruz
+    sendIntent.`package` = "com.whatsapp" // WhatsApp'ı hedef uygulama olarak belirtiyoruz
 
     try {
         context.startActivity(sendIntent)
     } catch (ex: ActivityNotFoundException) {
         // WhatsApp yüklü değilse veya desteklenmiyorsa hata işlemleri buraya eklenir.
-        Toast.makeText(context, "Instagram yüklü değil veya desteklenmiyor.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "WhatsApp yüklü değil veya desteklenmiyor.", Toast.LENGTH_SHORT).show()
     }
 }
 
+fun shareContent(context: Context, text: String, title: String = "Paylaş", packageName: String? = null) {
+    val sendIntent = Intent("android.intent.action.SEND")
+    sendIntent.putExtra(Intent.EXTRA_TEXT, text)
+    sendIntent.type = "text/plain"
 
+    // Eğer bir paket adı belirtilmişse, sadece o uygulamada paylaşım yap
+    if (!packageName.isNullOrBlank()) {
+        sendIntent.`package` = packageName
+        try {
+            context.startActivity(sendIntent)
+        } catch (ex: Exception) {
+            Toast.makeText(context, "Belirtilen uygulama bulunamadı.", Toast.LENGTH_SHORT).show()
+        }
+    } else {
+        // Bir paket adı belirtilmemişse, kullanıcıya seçim yapma şansı ver
+        val chooserIntent = Intent.createChooser(sendIntent, title)
+        context.startActivity(chooserIntent)
+    }
+}

@@ -1,7 +1,10 @@
 package com.ayberk.composedeezer.viewmodel
 
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.ayberk.composedeezer.model.Genre.User
 import com.ayberk.composedeezer.util.Constans.USER_COLLECTION
 import com.ayberk.composedeezer.util.Resource
@@ -12,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -23,13 +27,14 @@ class LoginViewModel @Inject constructor(
     private val auth : FirebaseAuth,
     private val db : FirebaseFirestore
 
-
 ) : ViewModel() {
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
     private val _register = MutableStateFlow<Resource<User>>(Resource.Unspecified())
     val register: Flow<Resource<User>> = _register
+
+
 
     fun login(email: String, password: String) {
 
@@ -57,11 +62,13 @@ class LoginViewModel @Inject constructor(
             }
     }
 
-    fun createEmailandPassword(user: User) {
+
+    fun createEmailandPassword(navHostController: NavHostController,user: User) {
         auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnSuccessListener {
                 it.user?.let { firebaseUser ->
                     saveUserInfo(firebaseUser.uid, user)
+                    navHostController.navigate("anasayfa")
                 }
             }
             .addOnFailureListener { e ->
