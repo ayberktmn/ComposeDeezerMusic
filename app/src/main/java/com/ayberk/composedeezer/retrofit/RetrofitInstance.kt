@@ -21,6 +21,6 @@ interface RetrofitInstance {
     suspend fun getAlbum(@Path("artist_id") artist_id: Int) : Album
 
     @GET("album/{album_id}/tracks")
-    suspend fun getMusic(@Path("album_id") album_di: Int) : Album
+    suspend fun getMusic(@Path("album_id") album_id: Int) : Album
 
 }

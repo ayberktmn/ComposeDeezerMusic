@@ -74,6 +74,5 @@ fun Navigation() {
             Music( album_id = albumid,
                 navHostController = navHostController)
         }
-
     }
 }
